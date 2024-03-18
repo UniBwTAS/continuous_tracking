@@ -24,6 +24,13 @@
         <arg name="bag_file" value="$(arg bag_file)"/>
     </include>
 
+    <!-- launch node which decompresses sensor_msgs/CompressedImage from bag (just for visualization) -->
+    <node name="decompress" pkg="image_transport" type="republish" args="compressed raw"
+          ns="sensor/camera/surround/front">
+        <remap from="in" to="image_rect_color"/>
+        <remap from="out" to="image_rect_color"/>
+    </node>
+
     <!-- launch RViz if desired -->
     <node name="rviz" pkg="rviz" type="rviz"
           args="--display-config $(find continuous_tracking)/rviz/continuous_tracker.rviz" output="log"
