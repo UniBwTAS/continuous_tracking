@@ -1,6 +1,6 @@
 #include <ros/ros.h>
 
-#include <continuous_tracking/ContinuousTrackerConfig.h>
+#include <continuous_tracking/ContinuousTrackingConfig.h>
 #include <continuous_tracking/dataset.h>
 #include <dynamic_reconfigure/server.h>
 #include <list>
@@ -174,18 +174,18 @@ bool operator!=(const Track& t1, const Track& t2)
     return (t1.id == t2.id);
 }
 
-class ContinuousTrackerNode
+class ContinuousTrackingNode
 {
   public:
-    explicit ContinuousTrackerNode(ros::NodeHandle nh, const ros::NodeHandle& private_nh)
+    explicit ContinuousTrackingNode(ros::NodeHandle nh, const ros::NodeHandle& private_nh)
         : t(ros::TransportHints().tcp().tcpNoDelay(true)),
-          reset_sub_(nh.subscribe("reset", 1, &ContinuousTrackerNode::callbackReset, this, t)),
+          reset_sub_(nh.subscribe("reset", 1, &ContinuousTrackingNode::callbackReset, this, t)),
           lidar_detections_sub_(
-              nh.subscribe("lidar_detections", 10000, &ContinuousTrackerNode::callbackLidarDetections, this, t)),
+              nh.subscribe("lidar_detections", 10000, &ContinuousTrackingNode::callbackLidarDetections, this, t)),
           continuous_ground_point_segmentation_sub_(
               nh.subscribe("continuous_ground_point_segmentation",
                            10000,
-                           &ContinuousTrackerNode::callbackContinuousGroundPointSegmentation,
+                           &ContinuousTrackingNode::callbackContinuousGroundPointSegmentation,
                            this,
                            t)),
           tf_buffer_(),
@@ -197,7 +197,7 @@ class ContinuousTrackerNode
         pub_update_ = nh.advertise<object_instance_msgs::ObjectInstance3DArray>("update", 10000);
         pub_tracks_ = nh.advertise<visualization_msgs::Marker>("predict", 10000);
 
-        reconfigure_server_.setCallback([this](ContinuousTrackerConfig& config, uint32_t level)
+        reconfigure_server_.setCallback([this](ContinuousTrackingConfig& config, uint32_t level)
                                         { callbackReconfigure(config, level); });
     }
 
@@ -567,16 +567,16 @@ class ContinuousTrackerNode
         bool bounding_box_enabled;
         switch (config_.bounding_box_enable_if)
         {
-            case ContinuousTracker_Yaw_Initialized:
+            case ContinuousTracking_Yaw_Initialized:
                 bounding_box_enabled = !std::isnan(updated_track->yaw);
                 break;
-            case ContinuousTracker_Has_Line:
+            case ContinuousTracking_Has_Line:
                 bounding_box_enabled = !std::isnan(yaw_by_line);
                 break;
-            case ContinuousTracker_Had_Previous_Motion:
+            case ContinuousTracking_Had_Previous_Motion:
                 bounding_box_enabled = !std::isnan(yaw_by_motion);
                 break;
-            case ContinuousTracker_Always:
+            case ContinuousTracking_Always:
                 bounding_box_enabled = true;
                 break;
             default:
@@ -591,16 +591,16 @@ class ContinuousTrackerNode
             float bounding_box_yaw;
             switch (config_.bounding_box_yaw_by)
             {
-                case ContinuousTracker_Track_Yaw:
+                case ContinuousTracking_Track_Yaw:
                     bounding_box_yaw = updated_track->yaw;
                     break;
-                case ContinuousTracker_Longest_Line:
+                case ContinuousTracking_Longest_Line:
                     bounding_box_yaw = yaw_by_line; // Todo: track based
                     break;
-                case ContinuousTracker_Principal_Component:
+                case ContinuousTracking_Principal_Component:
                     bounding_box_yaw = calculateYawByCovariance(msg); // Todo: track based
                     break;
-                case ContinuousTracker_Previous_Motion:
+                case ContinuousTracking_Previous_Motion:
                     bounding_box_yaw = yaw_by_motion;
                     break;
                 default:
@@ -616,7 +616,7 @@ class ContinuousTrackerNode
             fitBoundingBox(box_center,
                            box_dimensions,
                            bounding_box_yaw,
-                           config_.bounding_box_by == ContinuousTracker_Cluster ?
+                           config_.bounding_box_by == ContinuousTracking_Cluster ?
                                std::list<sensor_msgs::PointCloud2::ConstPtr>({msg}) :
                                updated_track->centroid.getMessages());
             q.setRPY(0, 0, bounding_box_yaw);
@@ -1228,17 +1228,17 @@ class ContinuousTrackerNode
         return output_msg;
     }
 
-    void callbackReconfigure(ContinuousTrackerConfig& config, uint32_t level)
+    void callbackReconfigure(ContinuousTrackingConfig& config, uint32_t level)
     {
-        ContinuousTrackerConfig old_config = config_;
+        ContinuousTrackingConfig old_config = config_;
 
         config_ = config;
         config_max_centroid_distance_squared_ = config.max_centroid_distance * config.max_centroid_distance;
     }
 
   private:
-    dynamic_reconfigure::Server<ContinuousTrackerConfig> reconfigure_server_;
-    ContinuousTrackerConfig config_;
+    dynamic_reconfigure::Server<ContinuousTrackingConfig> reconfigure_server_;
+    ContinuousTrackingConfig config_;
     double config_max_centroid_distance_squared_{};
     ros::TransportHints t;
     ros::Subscriber reset_sub_;
@@ -1269,8 +1269,8 @@ class ContinuousTrackerNode
 
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "continuous_tracker");
-    continuous_tracking::ContinuousTrackerNode node(ros::NodeHandle(), ros::NodeHandle("~"));
+    ros::init(argc, argv, "continuous_tracking");
+    continuous_tracking::ContinuousTrackingNode node(ros::NodeHandle(), ros::NodeHandle("~"));
     node.init();
     ros::spin();
 

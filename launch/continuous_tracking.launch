@@ -6,7 +6,7 @@
     <arg name="bag_file" default="" doc="path to bag file; if empty no bag file is replayed"/>
 
     <!-- launch continuous tracking node -->
-    <node name="continuous_tracking" pkg="continuous_tracking" type="continuous_tracker_node"
+    <node name="continuous_tracking" pkg="continuous_tracking" type="continuous_tracking_node"
           ns="perception/object_tracking" output="screen">
         <remap from="lidar_detections" to="/perception/detections/lidar_roof/cluster/continuous_clusters"/>
         <remap from="continuous_ground_point_segmentation"
@@ -33,6 +33,6 @@
 
     <!-- launch RViz if desired -->
     <node name="rviz" pkg="rviz" type="rviz"
-          args="--display-config $(find continuous_tracking)/rviz/continuous_tracker.rviz" output="log"
+          args="--display-config $(find continuous_tracking)/rviz/continuous_tracking.rviz" output="log"
           if="$(arg use_rviz)"/>
 </launch>

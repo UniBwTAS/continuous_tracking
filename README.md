@@ -47,7 +47,11 @@ In-Service Support (BAAINBw).
 
 ## 1. Download Sensor Data
 
-Download the [example rosbag](https://mega.nz/file/7NU11QxQ#-h3AotgPuyCyZaFWPGN0yxfDGNF6YZZM2ppw9QkMxEc) from our VW Touareg test vehicle.
+Download the [example rosbag](https://mega.nz/file/7NU11QxQ#-h3AotgPuyCyZaFWPGN0yxfDGNF6YZZM2ppw9QkMxEc) from our VW 
+Touareg test vehicle. Save the file's parent directory path to the environment variable:
+```bash
+export ROSBAG_PATH=/path/to/parent/directory/of/downloaded/file
+```
 
 ## 2. Setup Environment
 

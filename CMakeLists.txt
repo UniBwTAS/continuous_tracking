@@ -4,7 +4,7 @@ project(continuous_tracking)
 find_package(catkin REQUIRED COMPONENTS roscpp tf2_eigen tf2_ros object_instance_msgs visualization_msgs dynamic_reconfigure message_filters image_geometry)
 
 generate_dynamic_reconfigure_options(
-        cfg/ContinuousTracker.cfg
+        cfg/ContinuousTracking.cfg
 )
 
 catkin_package(
@@ -19,5 +19,5 @@ include_directories(
         ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(continuous_tracker_node src/continuous_tracker_node.cpp)
-target_link_libraries(continuous_tracker_node ${catkin_LIBRARIES})
+add_executable(continuous_tracking_node src/continuous_tracking_node.cpp)
+target_link_libraries(continuous_tracking_node ${catkin_LIBRARIES})
