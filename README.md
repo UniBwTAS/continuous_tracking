@@ -5,6 +5,10 @@
 
 ![Continuous Tracking Demo](https://github.com/UniBwTAS/continuous_tracking/blob/master/assets/demo.gif)
 
+## Video:
+
+[![Explanation Video](https://img.youtube.com/vi/dgkrTTSomjA/0.jpg)](https://www.youtube.com/watch?v=dgkrTTSomjA)
+
 ## Abstract:
 
 In an intelligent vehicle, it is essential to minimize the latencies in order to be able to react fast. Especially in the
@@ -43,29 +47,7 @@ In-Service Support (BAAINBw).
 
 ## 1. Download Sensor Data
 
-Download the example rosbag:
-
-```bash
-cd /folder/with/enough/space
-pip3 install gdown && gdown 1zM4xPRahgxdJXJGHNXYUpM_g4-9UrcwC
-export ROSBAG_PATH=$(pwd)
-```
-
-Alternatively download it manually from
-our [Google Drive](https://drive.google.com/file/d/1zM4xPRahgxdJXJGHNXYUpM_g4-9UrcwC/view?usp=sharing) and set the
-environment variable `ROSBAG_PATH` accordingly: `export ROSBAG_PATH=/parent/folder/of/rosbag`
-
-Available bags:
-
-- `gdown 1zM4xPRahgxdJXJGHNXYUpM_g4-9UrcwC` (
-  3.9GB, [Manual Download](https://drive.google.com/file/d/1zM4xPRahgxdJXJGHNXYUpM_g4-9UrcwC/view?usp=sharing))
-    - Long recording in urban scenario (no camera to reduce file size, no Ouster sensors)
-- `gdown 1qjCG6-nWBZ_2wJwoP80jj0gGopBT2c23` (
-  2.4GB, [Manual Download](https://drive.google.com/file/d/1qjCG6-nWBZ_2wJwoP80jj0gGopBT2c23/view?usp=sharing))
-    - Recording including Ouster 32 sensor data (blurred camera for privacy reasons)
-- `gdown 146IaBdEmkfBWdIgGV5HzrEYDTol84a1H` (
-  0.7GB, [Manual Download](https://drive.google.com/file/d/146IaBdEmkfBWdIgGV5HzrEYDTol84a1H/view?usp=sharing))
-    - Short recording of German Highway (blurred camera for privacy reasons)
+Download the [example rosbag](https://mega.nz/file/7NU11QxQ#-h3AotgPuyCyZaFWPGN0yxfDGNF6YZZM2ppw9QkMxEc) from our VW Touareg test vehicle.
 
 ## 2. Setup Environment
 
@@ -112,27 +94,9 @@ catkin build
 ```bash
 # run on VW Touareg rosbag (set the playback speed lower in Rviz (RosbagPanel) if you run in docker due to missing 
 # hardware acceleration for graphical output)
-roslaunch continuous_tracking demo_touareg.launch bag_file:=${ROSBAG_PATH}/vw_touareg_example1.bag
+roslaunch continuous_tracking continuous_tracking.launch bag_file:=${ROSBAG_PATH}/vw_touareg_example5.bag
 ```
-
-> [!Tip]
-> For the launch file, you can use `--wait_for_tf:=false` (default: `true`) argument. It controls whether to wait
-> for the transform from velodyne to fixed frame (e.g. odometry frame) with a timestamp larger than the one of the
-> firing or whether to use the latest available (probably incorrect) transform. The former is the accurate approach
-> (that's why it is the default) but the columns are published in larger batches/slices because they are accumulated
-> between two transforms. The size of a slice depends on the update rate of the transform (i.e. transforms with 50Hz
-> lead to batches/slices of 1/5 rotation for a LiDAR rotating with 10Hz). So for a nice visualization where the columns
-> are published one by one like it the GIF at the top of the page you should disable this flag.
 
 # TODOs
 
 - Port it to ROS2: planned soon
-- Add features:
-    - Ground point segmentation:
-        - In our paper we do ground point segmentation by using an accumulated terrain grid
-        - However, the source code for our terrain estimation is not published yet
-        - We do segmentation only based on current range image column (without temporal information)
-        - This is slightly worse
-        - TODO: publish source for terrain estimation
-    - Publish [kitti2bag](https://github.com/tomas789/kitti2bag) fork, which splits the 360° PointCloud2 into individual
-      firings in order to run it on KITTI rosbags
