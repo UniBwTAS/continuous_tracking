@@ -16,6 +16,7 @@
     <depend>dynamic_reconfigure</depend>
     <depend>message_filters</depend>
     <depend>image_geometry</depend>
+    <depend>continuous_clustering</depend>
 
     <exec_depend>rviz_object_instance</exec_depend>
     <exec_depend>compressed_image_transport</exec_depend>
